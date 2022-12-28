@@ -27,7 +27,10 @@ import com.lti.cld.service.InventoryService;
 public class InventoryController {
 	@Autowired
 	InventoryService inventoryService;
-
+	@GetMapping("/message")
+     public String message() {
+    	 return "congrats";
+     }
 	// Factories API
 	@PostMapping("/add/factory")
 	Factory addFactory(@RequestBody Factory factory) {

@@ -5,9 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class InventoryManagementRestAppApplication {
-	public  String message() {
-		return "Congrats";
-	}
+	
+	
+	
 
 	public static void main(String[] args) {
 		SpringApplication.run(InventoryManagementRestAppApplication.class, args);
