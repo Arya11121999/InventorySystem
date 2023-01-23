@@ -1,9 +1,15 @@
 package com.lti.cld.entity;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -21,6 +27,24 @@ public class Product {
 	private String description;
 	private int quantity;
 	
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "product_iamges",
+    joinColumns = {
+    		@JoinColumn(name = "product_Id")
+    },inverseJoinColumns = {
+    		@JoinColumn(name = "image_id")
+    })
+	private Set<ImageModel> productImages;
+	
+	
+	public Set<ImageModel> getProductImages() {
+		return productImages;
+	}
+
+	public void setProductImages(Set<ImageModel> productImages) {
+		this.productImages = productImages;
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "factory_id")
 	Factory factory;

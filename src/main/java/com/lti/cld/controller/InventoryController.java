@@ -1,10 +1,14 @@
 package com.lti.cld.controller;
 
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,10 +18,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.lti.cld.dto.ProductDTO;
 import com.lti.cld.entity.Factory;
+import com.lti.cld.entity.ImageModel;
 import com.lti.cld.entity.Product;
 import com.lti.cld.service.InventoryService;
 
@@ -57,15 +64,37 @@ public class InventoryController {
 	}
 
 	// Products API
-	@PostMapping("/add/product")
-	Product addProduct(@RequestBody ProductDTO productdto) {
+	@PostMapping(value = {"/add/product"})
+	Product addProduct(@RequestPart("product") ProductDTO productdto,@RequestPart("imageFile") MultipartFile[]file) {
 		Product product = new Product();
 		product.setFactory(inventoryService.getFactoryById(productdto.getFactoryId()));
 		product.setProductName(productdto.getProductName());
 		product.setDescription(productdto.getDescription());
 		product.setQuantity(productdto.getQuantity());
-		return inventoryService.addOrUpdateProduct(product);
+//		return inventoryService.addOrUpdateProduct(product);
+		try {
+			Set<ImageModel> images= uploadImage(file);
+			product.setProductImages(images);
+			
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	
 	}
+	public <MultipartFiles> Set<ImageModel> uploadImage(MultipartFiles[] multipartFiles)throws IOException {
+		Set<ImageModel> imageModels = new HashSet<>();
+		for(MultipartFiles file: multipartFiles) {
+		ImageModel imageModel = new ImageModel(
+				((MultipartFile) file).getOriginalFilename(),
+				((MultipartFile) file).getContentType(),
+				((MultipartFile) file).getBytes());
+		imageModels.add(imageModel);
+		}
+		return imageModels;
+	}
+	
+	
 
 	@PutMapping("/update/product")
 	Product updateProduct(@RequestBody ProductDTO productdto) {
