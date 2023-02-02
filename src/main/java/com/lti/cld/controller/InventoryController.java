@@ -1,10 +1,14 @@
 package com.lti.cld.controller;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.persistence.criteria.Path;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,14 +69,18 @@ public class InventoryController {
 	}
 
 	// Products API
-	@PostMapping(value = {"/add/product"})
+
+			
+		
+	@PostMapping(value = {"/add/product/{factoryId}"})
 	Product addProduct(@RequestPart("product") ProductDTO productdto,@RequestPart("imageFile") MultipartFile[]file) {
 		Product product = new Product();
 		product.setFactory(inventoryService.getFactoryById(productdto.getFactoryId()));
 		product.setProductName(productdto.getProductName());
 		product.setDescription(productdto.getDescription());
 		product.setQuantity(productdto.getQuantity());
-//		return inventoryService.addOrUpdateProduct(product);
+//	return inventoryService.addOrUpdateProduct(product);
+	
 		try {
 			Set<ImageModel> images= uploadImage(file);
 			product.setProductImages(images);
@@ -107,7 +116,7 @@ public class InventoryController {
 		product.setProductId(productdto.getProductId());
 		return inventoryService.addOrUpdateProduct(product);
 	}
-
+      
 	@DeleteMapping("/delete/product/{productId}")
 	ResponseEntity<Map<String,String>> deleteProduct(@PathVariable int productId) {
 		boolean deleted = inventoryService.removeProduct(productId);
