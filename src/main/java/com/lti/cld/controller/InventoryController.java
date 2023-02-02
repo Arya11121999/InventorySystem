@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.lti.cld.dto.ProductDTO;
 import com.lti.cld.entity.Factory;
-import com.lti.cld.entity.ImageModel;
 import com.lti.cld.entity.Product;
 import com.lti.cld.service.InventoryService;
 
