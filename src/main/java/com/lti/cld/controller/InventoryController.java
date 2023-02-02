@@ -72,38 +72,15 @@ public class InventoryController {
 
 			
 		
-	@PostMapping(value = {"/add/product/{factoryId}"})
-	Product addProduct(@RequestPart("product") ProductDTO productdto,@RequestPart("imageFile") MultipartFile[]file) {
-		Product product = new Product();
-		product.setFactory(inventoryService.getFactoryById(productdto.getFactoryId()));
-		product.setProductName(productdto.getProductName());
-		product.setDescription(productdto.getDescription());
-		product.setQuantity(productdto.getQuantity());
-//	return inventoryService.addOrUpdateProduct(product);
-	
-		try {
-			Set<ImageModel> images= uploadImage(file);
-			product.setProductImages(images);
-			
-		}catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		return null;
-	
+	@PostMapping("/add/product")
+	Product addProduct(@RequestBody ProductDTO productdto) {
+    Product product = new Product();
+	product.setFactory(inventoryService.getFactoryById(productdto.getFactoryId()));
+	product.setProductName(productdto.getProductName());
+	product.setDescription(productdto.getDescription());
+    product.setQuantity(productdto.getQuantity());
+     return inventoryService.addOrUpdateProduct(product);
 	}
-	public <MultipartFiles> Set<ImageModel> uploadImage(MultipartFiles[] multipartFiles)throws IOException {
-		Set<ImageModel> imageModels = new HashSet<>();
-		for(MultipartFiles file: multipartFiles) {
-		ImageModel imageModel = new ImageModel(
-				((MultipartFile) file).getOriginalFilename(),
-				((MultipartFile) file).getContentType(),
-				((MultipartFile) file).getBytes());
-		imageModels.add(imageModel);
-		}
-		return imageModels;
-	}
-	
-	
 
 	@PutMapping("/update/product")
 	Product updateProduct(@RequestBody ProductDTO productdto) {
