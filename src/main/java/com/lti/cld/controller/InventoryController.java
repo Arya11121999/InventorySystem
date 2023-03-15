@@ -1,18 +1,10 @@
 package com.lti.cld.controller;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.criteria.Path;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,10 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.lti.cld.dto.ProductDTO;
 import com.lti.cld.entity.Factory;
@@ -38,10 +27,7 @@ import com.lti.cld.service.InventoryService;
 public class InventoryController {
 	@Autowired
 	InventoryService inventoryService;
-	@GetMapping("/message")
-     public String message() {
-    	 return "congrats";
-     }
+
 	// Factories API
 	@PostMapping("/add/factory")
 	Factory addFactory(@RequestBody Factory factory) {
@@ -66,43 +52,44 @@ public class InventoryController {
 	List<Factory> viewAllfactories() {
 		return inventoryService.viewAllFactories();
 	}
-
-	// Products API
-
-			
-		
-	@PostMapping("/add/product")
-	Product addProduct(@RequestBody ProductDTO productdto) {
-    Product product = new Product();
-	product.setFactory(inventoryService.getFactoryById(productdto.getFactoryId()));
-	product.setProductName(productdto.getProductName());
-	product.setDescription(productdto.getDescription());
-    product.setQuantity(productdto.getQuantity());
-     return inventoryService.addOrUpdateProduct(product);
+	
+	@GetMapping("/factory/{factoryId}")
+	Factory viewFactory(@PathVariable int factoryId) {
+		return inventoryService.getFactoryById(factoryId);
 	}
 
-	@PutMapping("/update/product")
-	Product updateProduct(@RequestBody ProductDTO productdto) {
+	// Products API
+	@PostMapping(value="/add/product")
+	Product addProduct(ProductDTO productdto) {
 		Product product = new Product();
 		product.setFactory(inventoryService.getFactoryById(productdto.getFactoryId()));
 		product.setProductName(productdto.getProductName());
 		product.setDescription(productdto.getDescription());
 		product.setQuantity(productdto.getQuantity());
-		System.out.println(productdto.getQuantity());
-		product.setProductId(productdto.getProductId());
-		return inventoryService.addOrUpdateProduct(product);
+		return inventoryService.addOrUpdateProduct(product,productdto.getImage());
 	}
-      
+
+	@PutMapping("/update/product")
+	Product updateProduct(ProductDTO productdto) {
+		Product product = new Product();
+		product.setFactory(inventoryService.getFactoryById(productdto.getFactoryId()));
+		product.setProductName(productdto.getProductName());
+		product.setDescription(productdto.getDescription());
+		product.setQuantity(productdto.getQuantity());
+		product.setProductId(productdto.getProductId());
+		return inventoryService.addOrUpdateProduct(product,productdto.getImage());
+	}
+
 	@DeleteMapping("/delete/product/{productId}")
 	ResponseEntity<Map<String,String>> deleteProduct(@PathVariable int productId) {
 		boolean deleted = inventoryService.removeProduct(productId);
 		if (deleted)
-			return  ResponseEntity.status(HttpStatus.OK).body(Map.of("message","Deleted Successfully " + productId));
+			return  ResponseEntity.status(HttpStatus.OK).body(Map.of("message","Deletion Successfull " + productId));
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message","Not Deleted Successfully " + productId));
 	}
 
 	@GetMapping("/viewAll/products/{factoryId}")
-	List<Product> viewALlProducts(@PathVariable int factoryId) {
+	List<ProductDTO> viewALlProducts(@PathVariable int factoryId) {
 		return inventoryService.viewProductsByFactory(factoryId);
 	}
 }
