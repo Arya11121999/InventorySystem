@@ -66,6 +66,7 @@ public class InventoryController {
 		product.setProductName(productdto.getProductName());
 		product.setDescription(productdto.getDescription());
 		product.setQuantity(productdto.getQuantity());
+		
 		return inventoryService.addOrUpdateProduct(product,productdto.getImage());
 	}
 
